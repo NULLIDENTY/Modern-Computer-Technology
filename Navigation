@@ -1,0 +1,218 @@
+import { useState } from 'react';
+import { Link, useLocation } from 'wouter';
+import { useAuth } from '@/_core/hooks/useAuth';
+import { getLoginUrl } from '@/const';
+import { Menu, X, LogOut, LogIn, Settings } from 'lucide-react';
+
+export default function Navigation() {
+  const [location] = useLocation();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { user, logout, isAuthenticated } = useAuth();
+
+  const isActive = (path: string) => {
+    return location === path || location.startsWith(path + '/');
+  };
+
+  return (
+    <nav className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur">
+      <div className="container-responsive py-4">
+        <div className="flex items-center justify-between">
+          {/* Logo */}
+          <Link href="/">
+            <a className="flex items-center gap-2 font-bold text-xl neon-glow">
+              <span className="text-primary">$</span>
+              <span>TECH_BLOG</span>
+            </a>
+          </Link>
+
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center gap-8">
+            <Link href="/blog">
+              <a
+                className={`font-medium transition-colors ${
+                  isActive('/blog')
+                    ? 'text-primary'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                Blog
+              </a>
+            </Link>
+
+            <div className="flex items-center gap-4">
+              <Link href="/category/tech">
+                <a className="text-sm transition-colors text-muted-foreground hover:text-secondary">
+                  Tech
+                </a>
+              </Link>
+              <Link href="/category/bug-bounty">
+                <a className="text-sm transition-colors text-muted-foreground hover:text-secondary">
+                  Bug Bounty
+                </a>
+              </Link>
+              <Link href="/category/write-ups">
+                <a className="text-sm transition-colors text-muted-foreground hover:text-secondary">
+                  Write-ups
+                </a>
+              </Link>
+              <Link href="/category/tools">
+                <a className="text-sm transition-colors text-muted-foreground hover:text-secondary">
+                  Tools
+                </a>
+              </Link>
+            </div>
+
+            <Link href="/about">
+              <a
+                className={`font-medium transition-colors ${
+                  isActive('/about')
+                    ? 'text-primary'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                About
+              </a>
+            </Link>
+
+            <div className="flex items-center gap-4 pl-4 border-l border-border">
+              {isAuthenticated && user ? (
+                <>
+                  <Link href="/admin">
+                    <a className="button button-secondary inline-flex items-center gap-2 text-sm">
+                      <Settings className="w-4 h-4" />
+                      Admin
+                    </a>
+                  </Link>
+                  <button
+                    onClick={() => logout()}
+                    className="button button-outline inline-flex items-center gap-2 text-sm"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    Logout
+                  </button>
+                </>
+              ) : (
+                <a
+                  href={getLoginUrl()}
+                  className="button button-primary inline-flex items-center gap-2 text-sm"
+                >
+                  <LogIn className="w-4 h-4" />
+                  Login
+                </a>
+              )}
+            </div>
+          </div>
+
+          {/* Mobile Menu Button */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="md:hidden button button-outline p-2"
+          >
+            {mobileMenuOpen ? (
+              <X className="w-6 h-6" />
+            ) : (
+              <Menu className="w-6 h-6" />
+            )}
+          </button>
+        </div>
+
+        {/* Mobile Navigation */}
+        {mobileMenuOpen && (
+          <div className="md:hidden mt-4 pt-4 border-t border-border space-y-4">
+            <Link href="/blog">
+              <a
+                className={`block font-medium transition-colors ${
+                  isActive('/blog')
+                    ? 'text-primary'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Blog
+              </a>
+            </Link>
+
+            <div className="space-y-2 pl-4 border-l border-border">
+              <Link href="/category/tech">
+                <a
+                  className="block text-sm transition-colors text-muted-foreground hover:text-secondary"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Tech
+                </a>
+              </Link>
+              <Link href="/category/bug-bounty">
+                <a
+                  className="block text-sm transition-colors text-muted-foreground hover:text-secondary"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Bug Bounty
+                </a>
+              </Link>
+              <Link href="/category/write-ups">
+                <a
+                  className="block text-sm transition-colors text-muted-foreground hover:text-secondary"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Write-ups
+                </a>
+              </Link>
+              <Link href="/category/tools">
+                <a
+                  className="block text-sm transition-colors text-muted-foreground hover:text-secondary"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Tools
+                </a>
+              </Link>
+            </div>
+
+            <Link href="/about">
+              <a
+                className={`block font-medium transition-colors ${
+                  isActive('/about')
+                    ? 'text-primary'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                About
+              </a>
+            </Link>
+
+            <div className="pt-4 border-t border-border space-y-2">
+              {isAuthenticated && user ? (
+                <>
+                  <Link href="/admin">
+                    <a className="button button-secondary w-full inline-flex items-center justify-center gap-2">
+                      <Settings className="w-4 h-4" />
+                      Admin
+                    </a>
+                  </Link>
+                  <button
+                    onClick={() => {
+                      logout();
+                      setMobileMenuOpen(false);
+                    }}
+                    className="button button-outline w-full inline-flex items-center justify-center gap-2"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    Logout
+                  </button>
+                </>
+              ) : (
+                <a
+                  href={getLoginUrl()}
+                  className="button button-primary w-full inline-flex items-center justify-center gap-2"
+                >
+                  <LogIn className="w-4 h-4" />
+                  Login
+                </a>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    </nav>
+  );
+}

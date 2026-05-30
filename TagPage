@@ -1,0 +1,106 @@
+import { useRoute, Link } from 'wouter';
+import { trpc } from '@/lib/trpc';
+import { Loader2, ChevronLeft } from 'lucide-react';
+
+export default function TagPage() {
+  const [route, params] = useRoute('/blog/tag/:slug');
+  const slug = params?.slug as string;
+
+  const tagQuery = trpc.blog.getByTag.useQuery(
+    { tagSlug: slug, limit: 12, offset: 0 },
+    { enabled: !!slug }
+  );
+
+  const tag = tagQuery.data?.tag;
+  const posts = tagQuery.data?.posts || [];
+
+  if (!route) return null;
+
+  return (
+    <div className="min-h-screen bg-background text-foreground">
+      {/* Header */}
+      <section className="border-b border-border py-12 md:py-16">
+        <div className="container-responsive">
+          <Link href="/blog">
+            <a className="button button-outline inline-flex items-center gap-2 mb-6">
+              <ChevronLeft className="w-4 h-4" />
+              Back to Posts
+            </a>
+          </Link>
+
+          {tagQuery.isLoading ? (
+            <div className="flex items-center gap-4">
+              <Loader2 className="w-6 h-6 text-primary animate-spin" />
+              <span>Loading...</span>
+            </div>
+          ) : tag ? (
+            <h1 className="text-4xl md:text-5xl font-bold neon-glow">
+              #{tag.name}
+            </h1>
+          ) : (
+            <h1 className="text-4xl font-bold">Tag Not Found</h1>
+          )}
+        </div>
+      </section>
+
+      {/* Posts Grid */}
+      <section className="py-12 md:py-16">
+        <div className="container-responsive">
+          {tagQuery.isLoading ? (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="w-8 h-8 text-primary animate-spin" />
+            </div>
+          ) : posts.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground text-lg">
+                No posts with this tag yet.
+              </p>
+            </div>
+          ) : (
+            <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+              {posts.map((post) => (
+                <Link key={post.id} href={`/blog/${post.slug}`}>
+                  <a className="card-hover group h-full flex flex-col">
+                    {post.featuredImage && (
+                      <div className="mb-4 overflow-hidden rounded h-40 bg-muted">
+                        <img
+                          src={post.featuredImage}
+                          alt={post.title}
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                        />
+                      </div>
+                    )}
+
+                    <div className="flex-1 flex flex-col">
+                      <div className="mb-3 flex items-center gap-2">
+                        <span className="badge badge-secondary text-xs">
+                          {new Date(post.publishedAt || post.createdAt).toLocaleDateString()}
+                        </span>
+                        <span className="badge badge-primary text-xs">
+                          {post.readingTime} min
+                        </span>
+                      </div>
+
+                      <h3 className="text-lg font-bold mb-2 group-hover:text-secondary transition-colors line-clamp-2">
+                        {post.title}
+                      </h3>
+
+                      <p className="text-sm text-muted-foreground mb-4 line-clamp-3 flex-1">
+                        {post.excerpt}
+                      </p>
+
+                      <div className="flex items-center justify-between text-xs text-muted-foreground">
+                        <span className="font-mono">{post.viewCount} views</span>
+                        <span className="text-primary">→</span>
+                      </div>
+                    </div>
+                  </a>
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+    </div>
+  );
+}

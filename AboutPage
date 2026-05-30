@@ -1,0 +1,186 @@
+import { Link } from 'wouter';
+import { Github, Twitter, Linkedin, Award, ChevronLeft } from 'lucide-react';
+
+export default function AboutPage() {
+  return (
+    <div className="min-h-screen bg-background text-foreground">
+      {/* Header */}
+      <section className="border-b border-border py-12 md:py-16">
+        <div className="container-responsive">
+          <Link href="/">
+            <a className="button button-outline inline-flex items-center gap-2 mb-6">
+              <ChevronLeft className="w-4 h-4" />
+              Back Home
+            </a>
+          </Link>
+        </div>
+      </section>
+
+      {/* About Section */}
+      <section className="py-16 md:py-24">
+        <div className="container-responsive max-w-3xl">
+          <div className="mb-12">
+            <h1 className="text-5xl md:text-6xl font-bold mb-6 neon-glow">
+              About Me
+            </h1>
+            <p className="text-xl text-muted-foreground leading-relaxed">
+              Security researcher, bug bounty hunter, and technology enthusiast passionate about finding vulnerabilities and sharing knowledge with the community.
+            </p>
+          </div>
+
+          {/* Bio */}
+          <div className="card mb-12 border-2 border-primary/30">
+            <h2 className="text-2xl font-bold mb-4 text-secondary">Who I Am</h2>
+            <div className="space-y-4 text-foreground">
+              <p>
+                I'm a dedicated security researcher with a passion for uncovering vulnerabilities and helping organizations secure their systems. With years of experience in bug bounty programs, penetration testing, and security research, I've developed a deep understanding of modern attack vectors and defense mechanisms.
+              </p>
+              <p>
+                This blog is my platform for sharing security insights, bug bounty findings, tool reviews, and technical writeups. Whether you're a beginner in cybersecurity or an experienced professional, you'll find valuable content here.
+              </p>
+              <p>
+                I believe in responsible disclosure and contributing to a safer digital ecosystem. My research has been featured in various security publications and conferences.
+              </p>
+            </div>
+          </div>
+
+          {/* Skills */}
+          <div className="mb-12">
+            <h2 className="text-2xl font-bold mb-6 text-secondary">Expertise</h2>
+            <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
+              {[
+                'Web Application Security',
+                'API Security',
+                'Penetration Testing',
+                'Vulnerability Assessment',
+                'Bug Bounty Programs',
+                'Security Research',
+                'Exploit Development',
+                'Secure Code Review',
+              ].map((skill) => (
+                <div key={skill} className="card flex items-center gap-3">
+                  <Award className="w-5 h-5 text-primary flex-shrink-0" />
+                  <span className="font-medium">{skill}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Technologies */}
+          <div className="mb-12">
+            <h2 className="text-2xl font-bold mb-6 text-secondary">Technologies & Tools</h2>
+            <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 md:grid-cols-4">
+              {[
+                'Burp Suite',
+                'Metasploit',
+                'Wireshark',
+                'Nmap',
+                'Python',
+                'JavaScript',
+                'Docker',
+                'Kubernetes',
+                'AWS',
+                'Linux',
+                'Git',
+                'SQL Injection',
+              ].map((tech) => (
+                <div key={tech} className="badge badge-accent">
+                  {tech}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Social Links */}
+          <div className="card border-2 border-secondary/30 mb-12">
+            <h2 className="text-2xl font-bold mb-6 text-secondary">Connect With Me</h2>
+            <p className="text-muted-foreground mb-6">
+              Follow me on social media for daily security insights, tool recommendations, and vulnerability disclosures.
+            </p>
+            <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
+              <a
+                href="https://github.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="card-hover flex items-center gap-3 p-4"
+              >
+                <Github className="w-6 h-6 text-primary" />
+                <div>
+                  <p className="font-bold">GitHub</p>
+                  <p className="text-sm text-muted-foreground">@yourusername</p>
+                </div>
+              </a>
+
+              <a
+                href="https://twitter.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="card-hover flex items-center gap-3 p-4"
+              >
+                <Twitter className="w-6 h-6 text-secondary" />
+                <div>
+                  <p className="font-bold">Twitter</p>
+                  <p className="text-sm text-muted-foreground">@yourusername</p>
+                </div>
+              </a>
+
+              <a
+                href="https://hackerone.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="card-hover flex items-center gap-3 p-4"
+              >
+                <Award className="w-6 h-6 text-accent" />
+                <div>
+                  <p className="font-bold">HackerOne</p>
+                  <p className="text-sm text-muted-foreground">@yourusername</p>
+                </div>
+              </a>
+
+              <a
+                href="https://linkedin.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="card-hover flex items-center gap-3 p-4"
+              >
+                <Linkedin className="w-6 h-6 text-primary" />
+                <div>
+                  <p className="font-bold">LinkedIn</p>
+                  <p className="text-sm text-muted-foreground">Your Name</p>
+                </div>
+              </a>
+            </div>
+          </div>
+
+          {/* Contact */}
+          <div className="card bg-card/50 border-2 border-border">
+            <h2 className="text-2xl font-bold mb-4 text-secondary">Get In Touch</h2>
+            <p className="text-muted-foreground mb-6">
+              Interested in collaborating, discussing security topics, or have a vulnerability to report? Feel free to reach out!
+            </p>
+            <p className="text-foreground">
+              Email: <span className="text-secondary font-mono">security@example.com</span>
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="py-12 md:py-16 border-t border-border bg-card/50">
+        <div className="container-responsive text-center">
+          <h2 className="text-3xl font-bold mb-6 neon-glow">
+            Explore My Research
+          </h2>
+          <p className="text-lg text-muted-foreground mb-8">
+            Check out my latest blog posts and security findings.
+          </p>
+          <Link href="/blog">
+            <a className="button button-primary inline-flex items-center gap-2">
+              View All Posts →
+            </a>
+          </Link>
+        </div>
+      </section>
+    </div>
+  );
+}

@@ -1,0 +1,216 @@
+import { useEffect, useState } from 'react';
+import { Link } from 'wouter';
+import { trpc } from '@/lib/trpc';
+import { Loader2, ArrowRight, Search } from 'lucide-react';
+
+export default function HomePage() {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showSearch, setShowSearch] = useState(false);
+
+  const featuredQuery = trpc.blog.featured.useQuery();
+  const listQuery = trpc.blog.listPosts.useQuery({ limit: 6, offset: 0 });
+
+  const featured = featuredQuery.data || [];
+  const posts = listQuery.data || [];
+
+  return (
+    <div className="min-h-screen bg-background text-foreground">
+      {/* Hero Section */}
+      <section className="hero relative overflow-hidden border-b border-border">
+        <div className="absolute inset-0 opacity-20">
+          <div className="absolute top-0 left-0 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
+          <div className="absolute bottom-0 right-0 w-96 h-96 bg-secondary/10 rounded-full blur-3xl" />
+        </div>
+
+        <div className="container-responsive relative z-10 py-20 md:py-32">
+          <div className="max-w-3xl">
+            <div className="mb-6 flex items-center gap-2">
+              <span className="text-primary font-mono text-sm">$ SYSTEM_ONLINE</span>
+              <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
+            </div>
+
+            <h1 className="text-5xl md:text-7xl font-bold mb-6 neon-glow">
+              TECH & BUG BOUNTY
+            </h1>
+
+            <p className="text-xl text-muted-foreground mb-8 max-w-2xl leading-relaxed">
+              Exploring cybersecurity, vulnerability research, and cutting-edge technology.
+              Deep dives into bug bounties, security writeups, and hacker insights.
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Link href="/blog">
+                <a className="button button-primary inline-flex items-center gap-2">
+                  Explore Posts <ArrowRight className="w-4 h-4" />
+                </a>
+              </Link>
+              <Link href="/about">
+                <a className="button button-outline">About Me</a>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Featured Posts */}
+      {featured.length > 0 && (
+        <section className="py-16 md:py-24 border-b border-border">
+          <div className="container-responsive">
+            <h2 className="section-header">Featured</h2>
+
+            <div className="grid gap-6 grid-cols-1 md:grid-cols-3">
+              {featured.map((post) => (
+                <Link key={post.id} href={`/blog/${post.slug}`}>
+                  <a className="card-hover group h-full">
+                    {post.featuredImage && (
+                      <div className="mb-4 overflow-hidden rounded h-40 bg-muted">
+                        <img
+                          src={post.featuredImage}
+                          alt={post.title}
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                        />
+                      </div>
+                    )}
+
+                    <div className="mb-3 flex items-center gap-2">
+                      <span className="badge badge-primary text-xs">FEATURED</span>
+                    </div>
+
+                    <h3 className="text-lg font-bold mb-2 group-hover:text-secondary transition-colors line-clamp-2">
+                      {post.title}
+                    </h3>
+
+                    <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
+                      {post.excerpt}
+                    </p>
+
+                    <div className="flex items-center justify-between text-xs text-muted-foreground">
+                      <span>{post.readingTime} min read</span>
+                      <span>{post.viewCount} views</span>
+                    </div>
+                  </a>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Latest Posts */}
+      <section className="py-16 md:py-24">
+        <div className="container-responsive">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-12">
+            <h2 className="section-header m-0">Latest Posts</h2>
+
+            <button
+              onClick={() => setShowSearch(!showSearch)}
+              className="button button-secondary inline-flex items-center gap-2"
+            >
+              <Search className="w-4 h-4" />
+              Search
+            </button>
+          </div>
+
+          {showSearch && (
+            <div className="mb-8 p-4 border border-border rounded bg-card">
+              <input
+                type="text"
+                placeholder="Search posts..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="input w-full"
+              />
+            </div>
+          )}
+
+          {listQuery.isLoading ? (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="w-8 h-8 text-primary animate-spin" />
+            </div>
+          ) : posts.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground">No posts yet. Check back soon!</p>
+            </div>
+          ) : (
+            <div className="grid gap-6 grid-cols-1 md:grid-cols-2">
+              {posts.map((post) => (
+                <Link key={post.id} href={`/blog/${post.slug}`}>
+                  <a className="card-hover group">
+                    <div className="flex items-start justify-between mb-3">
+                      <span className="badge badge-secondary text-xs">
+                        {new Date(post.publishedAt || post.createdAt).toLocaleDateString()}
+                      </span>
+                      <span className="text-xs text-muted-foreground">{post.readingTime} min</span>
+                    </div>
+
+                    <h3 className="text-xl font-bold mb-2 group-hover:text-secondary transition-colors">
+                      {post.title}
+                    </h3>
+
+                    <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
+                      {post.excerpt}
+                    </p>
+
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-primary font-mono">
+                        {post.viewCount} views
+                      </span>
+                    </div>
+                  </a>
+                </Link>
+              ))}
+            </div>
+          )}
+
+          <div className="mt-12 text-center">
+            <Link href="/blog">
+              <a className="button button-primary inline-flex items-center gap-2">
+                View All Posts <ArrowRight className="w-4 h-4" />
+              </a>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-16 md:py-24 border-t border-border bg-card/50">
+        <div className="container-responsive text-center">
+          <h2 className="text-3xl md:text-4xl font-bold mb-6 neon-glow">
+            Stay Updated
+          </h2>
+
+          <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
+            Get notified when new posts are published. Follow me on social media for daily security insights.
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <a
+              href="https://github.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="button button-secondary"
+            >
+              GitHub
+            </a>
+            <a
+              href="https://twitter.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="button button-secondary"
+            >
+              Twitter
+            </a>
+            <a
+              href="https://hackerone.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="button button-secondary"
+            >
+              HackerOne
+            </a>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}
